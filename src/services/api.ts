@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+import { toast } from 'react-toastify';
 // import { parseCookies } from 'nookies'
 // import { AuthTokenError } from './errors/AuthTokenError'
 
@@ -29,6 +30,7 @@ function setupAPIClient(ctx = undefined) {
         }
 
         return Promise.reject(error);
+
     })
 
     return api;

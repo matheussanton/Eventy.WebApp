@@ -9,15 +9,35 @@ import Typography from '@mui/material/Typography';
 import Image from 'next/image';
 import Copyright from '../Components/Copyright/Copyright';
 import FloatingButton from '../Components/FloatingButton/FloatingButton';
+import { api } from '@/services/api';
 
 export default function SignIn() {
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+
+  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
+
     const data = new FormData(event.currentTarget);
-    console.log({
+
+    let password = data.get('password');
+    let passwordConfirm = data.get('passwordConfirm');
+    if(password !== passwordConfirm) return alert('As senhas não coincidem!'); // TODO: Mudar para um snackbar ou toast do Material-UI
+
+    var payload = {
+      name: data.get('name'),
       email: data.get('email'),
-      password: data.get('password'),
-    });
+      password: password,
+      passwordConfirm: passwordConfirm,
+    }
+
+    console.log(payload);
+
+    await api.post('User/v1', payload)
+        .then(response => {
+           console.log(response.data);
+      })
+      .catch(() => {
+        console.log('Erro na autenticação');
+      });
   };
 
   return (
@@ -27,7 +47,7 @@ export default function SignIn() {
           <Typography component="h1" variant="h5">
             Cadastro
           </Typography>
-          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={async (e) => await handleSubmit(e)} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
               required

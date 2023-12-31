@@ -1,7 +1,6 @@
 'use client'
 
 import './globals.css'
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
@@ -11,28 +10,87 @@ import Typography from '@mui/material/Typography';
 import Image from 'next/image';
 import Copyright from './Components/Copyright/Copyright';
 import { api } from '@/services/api';
+import { toast } from 'react-toastify';
+import { useState } from 'react';
+
+type LoginFormType = {
+  email: string | null;
+  password: string | null;
+};
+
 
 export default function SignIn() {
+
+  const [emailValidationMessage, setEmailValidationMessage] = useState("");
+  const [passwordValidationMessage, setPasswordValidationMessage] = useState("");
+
+  const [showError, setShowError] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
-    var payload = {
-      email: data.get('email'),
-      password: data.get('password'),
+    var payload : LoginFormType = {
+      email: data.get('email')?.toString() ?? "",
+      password: data.get('password')?.toString() ?? "",
     }
-    console.log(payload);
+
+    let formIsValid = validate(payload);
+    if(!formIsValid){
+      return;
+    }
 
     await api.post('Authentication/v1/authenticate', payload)
         .then(response => {
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify({name: response.data.name, email: response.data.email}));
       })
-      .catch(() => {
-        console.log('Erro na autenticação');
+      .catch(e => {
+        let data : any = e?.response?.data;
+        let errorMessage = data[0]?.message ?? 'Erro';
+
+        toast.error(errorMessage);
       });
   };
+
+  const validateEmail = (email : any) : boolean => {
+
+    if(!email || email.length == 0) {
+      setEmailValidationMessage("Email é obrigatório");
+      return false;
+    }
+    
+    if(!email.includes('@')) {
+      setEmailValidationMessage("Email inválido");
+      return false;
+    }
+
+    setEmailValidationMessage("");
+    return true;
+  }
+
+  const validatePassowrd = (password : any) : boolean => {
+    
+    if(!password || password.length == 0) {
+      setPasswordValidationMessage("Senha é obrigatória");
+      return false;
+    }
+
+    return true;
+  }
+
+  const validate = (payload : LoginFormType) : boolean  => {
+
+    var isEmailValid = validateEmail(payload?.email);
+    var isPasswordValid = validatePassowrd(payload?.password);
+
+    if(!isEmailValid || !isPasswordValid){
+      setShowError(true);
+      return false;
+    };
+
+    return true;
+  }
 
   return (
       <div  className='flex flex-col justify-center items-center h-[100vh] w-[100vw] text-black'>
@@ -51,6 +109,8 @@ export default function SignIn() {
               name="email"
               autoComplete="email"
               autoFocus
+              error={showError && emailValidationMessage.length > 0}
+              helperText={showError && emailValidationMessage.length > 0 ? emailValidationMessage : null}
             />
             <TextField
               margin="normal"
@@ -61,6 +121,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              error={showError && passwordValidationMessage.length > 0}
+              helperText={showError && passwordValidationMessage.length > 0 ? passwordValidationMessage : null}
             />
             <Button
               type="submit"
