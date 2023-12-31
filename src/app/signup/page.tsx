@@ -1,37 +1,23 @@
 'use client'
 
-import './globals.css'
+import '../globals.css'
 import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
-import Link from '@mui/material/Link';
-import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
 import Image from 'next/image';
-import Copyright from './Components/Copyright/Copyright';
-import { api } from '@/services/api';
+import Copyright from '../Components/Copyright/Copyright';
+import FloatingButton from '../Components/FloatingButton/FloatingButton';
 
 export default function SignIn() {
-
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
     const data = new FormData(event.currentTarget);
-    var payload = {
+    console.log({
       email: data.get('email'),
       password: data.get('password'),
-    }
-    console.log(payload);
-
-    await api.post('Authentication/v1/authenticate', payload)
-        .then(response => {
-          localStorage.setItem('token', response.data.token);
-          localStorage.setItem('user', JSON.stringify({name: response.data.name, email: response.data.email}));
-      })
-      .catch(() => {
-        console.log('Erro na autenticação');
-      });
+    });
   };
 
   return (
@@ -39,9 +25,19 @@ export default function SignIn() {
         <Box className="flex flex-col items-center justify-center m-4 md:w-[500px]">
           <Image src="/logo.svg" alt="Eventy Logo" width={216} height={48} />
           <Typography component="h1" variant="h5">
-            Entrar
+            Cadastro
           </Typography>
-          <Box component="form" onSubmit={async (e) => {await  handleSubmit(e)}} noValidate sx={{ mt: 1 }}>
+          <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              id="name"
+              label="Nome"
+              name="name"
+              autoComplete="name"
+              autoFocus
+            />
             <TextField
               margin="normal"
               required
@@ -50,7 +46,6 @@ export default function SignIn() {
               label="Email"
               name="email"
               autoComplete="email"
-              autoFocus
             />
             <TextField
               margin="normal"
@@ -62,29 +57,29 @@ export default function SignIn() {
               id="password"
               autoComplete="current-password"
             />
+            <TextField
+              margin="normal"
+              required
+              fullWidth
+              name="passwordConfirm"
+              label="Confirme sua senha"
+              type="password"
+              id="passwordConfirm"
+              autoComplete="current-password"
+            />
             <Button
               type="submit"
               fullWidth
               variant="contained"
               sx={{ mt: 3, mb: 2 }}
             >
-              Entrar
+              Cadastrar
             </Button>
-            <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Esqueceu a senha?
-                </Link>
-              </Grid>
-              <Grid item>
-                <Link href="/signup" variant="body2">
-                  {"Não tem uma conta? Cadastre-se"}
-                </Link>
-              </Grid>
-            </Grid>
           </Box>
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
+
+        <FloatingButton path='/' text='Voltar ao Login' />
       </div>
   );
 }
