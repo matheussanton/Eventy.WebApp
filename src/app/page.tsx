@@ -42,6 +42,8 @@ export default function SignIn() {
 
     await api.post('Authentication/v1/authenticate', payload)
         .then(response => {
+          if(typeof window === 'undefined') return;
+          
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify({name: response.data.name, email: response.data.email}));
       })
@@ -76,6 +78,7 @@ export default function SignIn() {
       return false;
     }
 
+    setPasswordValidationMessage("");
     return true;
   }
 

@@ -1,5 +1,4 @@
 import axios, { AxiosError } from 'axios'
-import { toast } from 'react-toastify';
 // import { parseCookies } from 'nookies'
 // import { AuthTokenError } from './errors/AuthTokenError'
 
@@ -8,12 +7,15 @@ import { toast } from 'react-toastify';
 function setupAPIClient(ctx = undefined) {
 
     // let cookies = parseCookies(ctx);
+    let token = '';
+    if(typeof window !== 'undefined')
+        token = localStorage.getItem('token') ?? '';
 
     const api = axios.create({
         baseURL: 'https://localhost:7213/api/',
         headers: {
             // Authorization: `Bearer ${cookies['@pizzapp.token']}`
-            Authorization: localStorage.getItem('token')
+            Authorization: token
         }
     })
 
