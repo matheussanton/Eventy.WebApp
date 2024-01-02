@@ -11,7 +11,8 @@ import Image from 'next/image';
 import Copyright from './Components/Copyright/Copyright';
 import { api } from '@/services/api';
 import { toast } from 'react-toastify';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 
 type LoginFormType = {
   email: string | null;
@@ -25,6 +26,16 @@ export default function SignIn() {
   const [passwordValidationMessage, setPasswordValidationMessage] = useState("");
 
   const [showError, setShowError] = useState(false);
+
+  const router = useRouter();
+
+  useEffect(() => {
+          
+      if (typeof window !== 'undefined') {
+          localStorage.clear();
+          api.defaults.headers['Authorization'] = '';
+      }
+  }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -46,6 +57,10 @@ export default function SignIn() {
           
           localStorage.setItem('token', response.data.token);
           localStorage.setItem('user', JSON.stringify({name: response.data.name, email: response.data.email}));
+
+          api.defaults.headers['Authorization'] = response.data.token;
+
+          router.replace('/events');
       })
       .catch(e => {
         let data : any = e?.response?.data;

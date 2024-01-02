@@ -8,8 +8,9 @@ function setupAPIClient(ctx = undefined) {
 
     // let cookies = parseCookies(ctx);
     let token = '';
-    if(typeof window !== 'undefined')
+    if(typeof window !== 'undefined'){
         token = localStorage.getItem('token') ?? '';
+    }
 
     const api = axios.create({
         baseURL: 'https://localhost:7213/api/',

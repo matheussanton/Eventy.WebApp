@@ -1,7 +1,6 @@
 'use client'
 
 import '../globals.css'
-import * as React from 'react';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
@@ -10,26 +9,34 @@ import Image from 'next/image';
 import Copyright from '../Components/Copyright/Copyright';
 import FloatingButton from '../Components/FloatingButton/FloatingButton';
 import { api } from '@/services/api';
+import { SignupFormType } from './types/SignupFormType';
+import { useState } from 'react';
+import { getFormData } from './hooks/getFormData';
+import { validate } from './hooks/validation';
 
 export default function SignIn() {
+
+  const [nameValidationMessage, setNameValidationMessage] = useState("");
+  const [emailValidationMessage, setEmailValidationMessage] = useState("");
+  const [passwordValidationMessage, setPasswordValidationMessage] = useState("");
+  const [passwordConfirmValidationMessage, setPasswordConfirmValidationMessage] = useState("");
+
+  const [showError, setShowError] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    const data = new FormData(event.currentTarget);
-
-    let password = data.get('password');
-    let passwordConfirm = data.get('passwordConfirm');
-    if(password !== passwordConfirm) return alert('As senhas não coincidem!'); // TODO: Mudar para um snackbar ou toast do Material-UI
-
-    var payload = {
-      name: data.get('name'),
-      email: data.get('email'),
-      password: password,
-      passwordConfirm: passwordConfirm,
+    const payload = getFormData(event);
+    let formIsValid = validate(payload, {
+      setNameValidationMessage,
+      setEmailValidationMessage,
+      setPasswordValidationMessage,
+      setPasswordConfirmValidationMessage,
+      setShowError
+    });
+    if(!formIsValid){
+      return;
     }
-
-    console.log(payload);
 
     await api.post('User/v1', payload)
         .then(response => {
@@ -57,6 +64,8 @@ export default function SignIn() {
               name="name"
               autoComplete="name"
               autoFocus
+              error={showError && nameValidationMessage.length > 0}
+              helperText={showError && nameValidationMessage.length > 0 ? nameValidationMessage : null}
             />
             <TextField
               margin="normal"
@@ -66,6 +75,8 @@ export default function SignIn() {
               label="Email"
               name="email"
               autoComplete="email"
+              error={showError && emailValidationMessage.length > 0}
+              helperText={showError && emailValidationMessage.length > 0 ? emailValidationMessage : null}
             />
             <TextField
               margin="normal"
@@ -76,6 +87,8 @@ export default function SignIn() {
               type="password"
               id="password"
               autoComplete="current-password"
+              error={showError && passwordValidationMessage.length > 0}
+              helperText={showError && passwordValidationMessage.length > 0 ? passwordValidationMessage : null}
             />
             <TextField
               margin="normal"
@@ -86,6 +99,8 @@ export default function SignIn() {
               type="password"
               id="passwordConfirm"
               autoComplete="current-password"
+              error={showError && passwordConfirmValidationMessage.length > 0}
+              helperText={showError && passwordConfirmValidationMessage.length > 0 ? passwordConfirmValidationMessage : null}
             />
             <Button
               type="submit"
