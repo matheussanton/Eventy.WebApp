@@ -1,3 +1,4 @@
+import { parseDateFromString } from "@/utils/datetimeUtils";
 import { User } from "../page";
 import { EventForm } from "../types";
 
@@ -6,10 +7,13 @@ export const getFormData = (event: React.FormEvent<HTMLFormElement>, participant
 
     const data = new FormData(event.currentTarget);
 
-    let startDate = new Date(data.get('startDate')?.toString() ?? "");
+    console.log(data.get('startDate')?.toString());
+    console.log(data.get('endDate')?.toString());
+
+    let startDate = parseDateFromString(data.get('startDate')?.toString() ?? "");
     startDate.setHours(startDate.getHours() - 3);
 
-    let endDate = new Date(data.get('endDate')?.toString() ?? "");
+    let endDate = parseDateFromString(data.get('endDate')?.toString() ?? "");
     endDate.setHours(endDate.getHours() - 3);
 
     var payload : EventForm = {

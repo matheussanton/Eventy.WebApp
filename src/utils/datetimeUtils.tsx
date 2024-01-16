@@ -28,3 +28,8 @@ export const formatDateTime = (date: Date) => {
         timeZone: 'UTC',
     }).format(date);
 };
+
+export function parseDateFromString(dateString : string) {
+    const [day, month, year, hour, minute] = dateString.match(/\d+/g) || [];
+    return new Date(`${year}-${month}-${day}T${hour}:${minute}`);
+  }

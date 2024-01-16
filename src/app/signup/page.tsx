@@ -13,6 +13,7 @@ import { SignupFormType } from './types/SignupFormType';
 import { useState } from 'react';
 import { getFormData } from './hooks/getFormData';
 import { validate } from './hooks/validation';
+import { toast } from 'react-toastify';
 
 export default function SignIn() {
 
@@ -40,10 +41,18 @@ export default function SignIn() {
 
     await api.post('User/v1', payload)
         .then(response => {
-           console.log(response.data);
+          toast.success(response.data[0]?.message ?? 'Usuário cadastrado com sucesso!');
+          return;
       })
-      .catch(() => {
-        console.log('Erro na autenticação');
+      .catch((e) => {
+        var responseData = e.response.data[0];
+        var message = responseData?.message ?? 'Erro ao cadastrar usuário';
+        toast.error(message);
+
+        if(responseData.key == 'Email'){
+          setEmailValidationMessage(message);
+          setShowError(true);
+        }
       });
   };
 
