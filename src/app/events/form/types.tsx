@@ -7,3 +7,4 @@ export type EventForm = {
     googleMapsUrl: string;
     participants: string[];
 }
+

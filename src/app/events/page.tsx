@@ -13,6 +13,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
 import { toast } from "react-toastify";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
+import { EStatus } from "../enums/EStatus";
 
 const modalStyle = {
     position: 'absolute' as 'absolute',
@@ -51,7 +52,7 @@ export default function Dashboard() {
                                 component={Link}
                                 href={`/events/form?id=${params.id}`}
                             >
-                                <CheckIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
+                                <EditIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
                             </IconButton>
                             <IconButton
                                 aria-label="delete"
@@ -66,8 +67,12 @@ export default function Dashboard() {
         },
     ];
 
-    const eventsToAcceptColumns: GridColDef[] = [
-        { field: 'owner', headerName: 'Anfitrião', flex: 1},
+    const pendingEventsColumns: GridColDef[] = [
+        { field: 'owner.name',
+            valueGetter: (params : GridCellParams) => {
+                return params?.row?.owner?.name;
+            },
+            headerName: 'Anfitrião', flex: 1},
         { field: 'name', headerName: 'Nome', flex: 1},
         { field: 'startDate', headerName: 'Início', flex: 1},
         { field: 'endDate', headerName: 'Fim', flex: 1},
@@ -83,14 +88,14 @@ export default function Dashboard() {
                             <IconButton
                                 aria-label="accept"
                                 component={Link}
-                                href={`/events/form?id=${params.id}`}
+                                onClick={() => patchEventStatus(params.id, EStatus.ACTIVE)}
                             >
-                                <EditIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
+                                <CheckIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
                             </IconButton>
                             <IconButton
                                 aria-label="decline"
                                 component={Link}
-                                onClick={() => callDeleteModal(params.id)}
+                                onClick={() => patchEventStatus(params.id, EStatus.INACTIVE)}
                             >
                                 <DeleteIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
                             </IconButton>
@@ -116,7 +121,19 @@ export default function Dashboard() {
         });
     }
 
-    const [rows, setRows] = React.useState([]);
+    const patchEventStatus = (eventId : GridRowId, status : EStatus) => {
+        api.patch(`Events/v1/${eventId}?status=${status}`)
+        .then(response => {
+            let action = status == EStatus.ACTIVE ? 'aceito' : 'recusado';
+            toast.success(`Evento ${action} com sucesso!`);
+
+            fetchData();
+        });
+    }
+
+    const [events, setEvents] = React.useState([]);
+    const [pendingEvents, setPendingEvents] = React.useState([]);
+
     const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
     const [idForDeletion, setIdForDeletion] = React.useState<GridRowId>('');
 
@@ -131,7 +148,21 @@ export default function Dashboard() {
                     endDate: formatStringDateTime(item.endDate),
                 }
             });
-            setRows(data);
+            setEvents(data);
+        });
+
+        await api.get('Events/v1/pending')
+        .then(response => {
+            let data = response.data.map((item : any) => {
+                return {
+                    id: item.id,
+                    name: item.name,
+                    startDate: formatStringDateTime(item.startDate),
+                    endDate: formatStringDateTime(item.endDate),
+                    owner: item.owner
+                }
+            });
+            setPendingEvents(data);
         });
     };
 
@@ -175,7 +206,7 @@ export default function Dashboard() {
                                     <div style={{ height: 400, width: '100%' }}>
                                         <DataGrid
                                             rowSelection={false}
-                                            rows={rows}
+                                            rows={events}
                                             columns={eventsColumns}
                                             initialState={{
                                             pagination: {
@@ -219,8 +250,8 @@ export default function Dashboard() {
                                     <div style={{ height: 400, width: '100%' }}>
                                         <DataGrid
                                             rowSelection={false}
-                                            rows={rows}
-                                            columns={eventsToAcceptColumns}
+                                            rows={pendingEvents}
+                                            columns={pendingEventsColumns}
                                             initialState={{
                                             pagination: {
                                                 paginationModel: { page: 0, pageSize: 5 },
