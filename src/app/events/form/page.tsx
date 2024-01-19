@@ -15,7 +15,9 @@ import utc from 'dayjs/plugin/utc';
 import timezone from 'dayjs/plugin/timezone';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import { getFormData } from './hooks/getFormData';
-import {useRouter} from 'next/navigation';
+import {useRouter, useSearchParams} from 'next/navigation';
+import { validate, validateDates } from './hooks/formValidation';
+import { toast } from 'react-toastify';
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -29,39 +31,52 @@ export type User = {
 
 export default function CreateEvent() {
 
+  const searchParams = useSearchParams()
+  const id = searchParams.get('id') ?? '';
   const router = useRouter();
+
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [startDate, setStartDate] = useState<dayjs.Dayjs>();
+  const [endDate, setEndDate] = useState<dayjs.Dayjs>();
+  const [location, setLocation] = useState("");
+  const [googleMapsUrl, setGoogleMapsUrl] = useState("");
+  const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
 
   const [users, setUsers] = useState<User[]>([]);
 
-  const [selectedParticipants, setSelectedParticipants] = useState<User[]>([]);
 
   const [nameValidationMessage, setNameValidationMessage] = useState("");
-  const [emailValidationMessage, setEmailValidationMessage] = useState("");
-  const [passwordValidationMessage, setPasswordValidationMessage] = useState("");
-  const [passwordConfirmValidationMessage, setPasswordConfirmValidationMessage] = useState("");
+  const [descriptionValidationMessage, setDescriptionValidationMessage] = useState("");
+  const [locationValidationMessage, setLocationValidationMessage] = useState("");
+
 
   const [showError, setShowError] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-     const payload = getFormData(event, selectedParticipants);
-     console.log(payload);
+    let dateValidationMessage = validateDates(event);
+    if(dateValidationMessage.length > 0){
+      toast.error(dateValidationMessage);
+      return;
+    }
 
-    // let formIsValid = validate(payload, {
-    //   setNameValidationMessage,
-    //   setEmailValidationMessage,
-    //   setPasswordValidationMessage,
-    //   setPasswordConfirmValidationMessage,
-    //   setShowError
-    // });
-    // if(!formIsValid){
-    //   return;
-    // }
+    const payload = getFormData(event, selectedParticipants);
+
+    let formIsValid = validate(payload, {
+      setNameValidationMessage,
+      setDescriptionValidationMessage,
+      setLocationValidationMessage,
+      setShowError
+    });
+    
+    if(!formIsValid){
+      return;
+    }
 
     await api.post('Events/v1', payload)
         .then(response => {
-           console.log(response.data);
            router.push('/events');
       })
       .catch((e) => {
@@ -70,14 +85,40 @@ export default function CreateEvent() {
   };
 
   useEffect(() => {
+
+    if(localStorage === undefined) return;
+    var loggedUser = JSON.parse(localStorage.getItem('user') ?? "");
+
+    if(id !== '')
+    {
+        api.get(`Events/v1/`+id)
+        .then(response => {
+            fillForm(response.data);
+        })
+        .catch(() => {
+            console.log('Erro');
+        });
+    }
+
     api.get('User/v1')
       .then(response => {
-        setUsers(response.data);
+        let users = response.data?.filter((user : User) => user.id !== loggedUser.id)
+        setUsers(users);
       })
       .catch(() => {
         console.log('Erro');
       });
   }, []);
+
+  const fillForm = (event) => {
+    setName(event.name);
+    setDescription(event.description);
+    setStartDate(dayjs(event.startDate));
+    setEndDate(dayjs(event.endDate));
+    setLocation(event.location);
+    setGoogleMapsUrl(event.googleMapsUrl);
+    setSelectedParticipants(event.participants);
+  }
 
   return (
       <>
@@ -103,6 +144,8 @@ export default function CreateEvent() {
                                     autoFocus
                                     error={showError && nameValidationMessage.length > 0}
                                     helperText={showError && nameValidationMessage.length > 0 ? nameValidationMessage : null}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
                                     />
                             </Grid>
                             <Grid container item xs={12}>
@@ -118,8 +161,10 @@ export default function CreateEvent() {
                                         name="description"
                                         autoComplete="description"
                                         autoFocus
-                                        error={showError && nameValidationMessage.length > 0}
-                                        helperText={showError && nameValidationMessage.length > 0 ? nameValidationMessage : null}
+                                        error={showError && descriptionValidationMessage.length > 0}
+                                        helperText={showError && descriptionValidationMessage.length > 0 ? descriptionValidationMessage : null}
+                                        value={description}
+                                        onChange={(e) => setDescription(e.target.value)}
                                     />
                             </Grid>
                             <Grid container item xs={6}>
@@ -137,6 +182,8 @@ export default function CreateEvent() {
                                             timezone="America/Sao_Paulo"
                                             format="DD/MM/YYYY HH:mm"
                                             sx={{width: '100%'}}
+                                            value={startDate}
+                                            onChange={(value) => setStartDate(value)}
                                         />
                                 </LocalizationProvider>
                             </Grid>
@@ -155,6 +202,8 @@ export default function CreateEvent() {
                                             timezone="America/Sao_Paulo"
                                             format="DD/MM/YYYY HH:mm"
                                             sx={{width: '100%'}}
+                                            value={endDate}
+                                            onChange={(value) => setEndDate(value)}
                                         />
                                 </LocalizationProvider>
                             </Grid>
@@ -166,8 +215,10 @@ export default function CreateEvent() {
                                     name="location"
                                     label="Local"
                                     id="location"
-                                    error={showError && passwordValidationMessage.length > 0}
-                                    helperText={showError && passwordValidationMessage.length > 0 ? passwordValidationMessage : null}
+                                    error={showError && locationValidationMessage.length > 0}
+                                    helperText={showError && locationValidationMessage.length > 0 ? locationValidationMessage : null}
+                                    value={location}
+                                    onChange={(e) => setLocation(e.target.value)}
                                 />
                             </Grid>
                             <Grid container item xs={6}>
@@ -177,8 +228,8 @@ export default function CreateEvent() {
                                     name="googleMapsUrl"
                                     label="URL do Google Maps"
                                     id="googleMapsUrl"
-                                    error={showError && passwordValidationMessage.length > 0}
-                                    helperText={showError && passwordValidationMessage.length > 0 ? passwordValidationMessage : null}
+                                    value={googleMapsUrl}
+                                    onChange={(e) => setGoogleMapsUrl(e.target.value)}
                                 />
                             </Grid>
                              <Grid container item xs={12}>
@@ -191,13 +242,14 @@ export default function CreateEvent() {
                                     filterSelectedOptions
                                     disableCloseOnSelect
                                     renderInput={(params) => (
-                                    <TextField
-                                        {...params}
-                                        label="Participantes"
-                                        placeholder="Selecione os participantes"
-                                    />
+                                        <TextField
+                                            {...params}
+                                            label="Participantes"
+                                            placeholder="Selecione os participantes"
+                                        />
                                     )}
                                     noOptionsText={users.length === 0 ? 'Nenhum usuário encontrado' : 'Todos usuários foram selecionados'}
+                                    value={selectedParticipants}
                                     onChange={(_, value) => setSelectedParticipants(value)}
                                 />
                             </Grid>
@@ -209,6 +261,7 @@ export default function CreateEvent() {
                                 sx={{ mt: 3, mb: 2, color: 'black', width: '150px',
                                     backgroundColor: 'rgb(209 213 219)', ":hover": { backgroundColor: 'rgb(229 231 235)' }}}
                                 className='bg-gray-300 hover:bg-gray-200'
+                                href='/events'
                             >
                                 Cancelar
                             </Button>

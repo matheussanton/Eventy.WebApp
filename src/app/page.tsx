@@ -56,7 +56,9 @@ export default function SignIn() {
           if(typeof window === 'undefined') return;
           
           localStorage.setItem('token', response.data.token);
-          localStorage.setItem('user', JSON.stringify({name: response.data.name, email: response.data.email}));
+          localStorage.setItem('user', JSON.stringify({name: response.data.name,
+                                                       email: response.data.email,
+                                                       id: response.data.id}));
 
           api.defaults.headers['Authorization'] = response.data.token;
 

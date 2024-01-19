@@ -7,9 +7,6 @@ export const getFormData = (event: React.FormEvent<HTMLFormElement>, participant
 
     const data = new FormData(event.currentTarget);
 
-    console.log(data.get('startDate')?.toString());
-    console.log(data.get('endDate')?.toString());
-
     let startDate = parseDateFromString(data.get('startDate')?.toString() ?? "");
     startDate.setHours(startDate.getHours() - 3);
 
