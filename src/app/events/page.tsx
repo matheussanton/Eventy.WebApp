@@ -7,10 +7,11 @@ import { DataGrid, GridCellParams, GridColDef, GridRowId, GridValueGetterParams 
 import { useEffect } from "react";
 import { api } from "@/services/api";
 import { formatStringDateTime } from "@/utils/datetimeUtils";
-import { Box, Button, IconButton, Link, Modal, Tab, Tabs, Typography } from "@mui/material";
+import { Box, Button, IconButton, Link, Modal, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CheckIcon from '@mui/icons-material/Check';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 import { toast } from "react-toastify";
 import { TabContext, TabList, TabPanel } from "@mui/lab";
 import { EStatus } from "../enums/EStatus";
@@ -34,10 +35,10 @@ const modalStyle = {
 export default function Dashboard() {
 
     const eventsColumns: GridColDef[] = [
+        { field: 'owner', headerName: 'Anfitrião', flex: 1},
         { field: 'name', headerName: 'Nome', flex: 1},
         { field: 'startDate', headerName: 'Início', flex: 1},
         { field: 'endDate', headerName: 'Fim', flex: 1},
-        //a column with two action icons
         {
             field: 'actions',
             headerName: 'Ações',
@@ -46,21 +47,41 @@ export default function Dashboard() {
             disableClickEventBubbling: true,
             renderCell: (params: GridCellParams) => {
                 return (
-                    <div className="flex flex-row items-center justify-center">
-                            <IconButton
-                                aria-label="edit"
-                                component={Link}
-                                href={`/events/form?id=${params.id}`}
-                            >
-                                <EditIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
-                            </IconButton>
-                            <IconButton
-                                aria-label="delete"
-                                component={Link}
-                                onClick={() => callDeleteModal(params.id)}
-                            >
-                                <DeleteIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
-                            </IconButton>
+                    <div className="w-full flex flex-row items-center justify-center">
+                            {params.row.isOwner ? (
+                                <>
+                                 <Tooltip title="Editar" placement="bottom">
+                                        <IconButton
+                                            aria-label="edit"
+                                            component={Link}
+                                            href={`/events/form?id=${params.id}`}
+                                        >
+                                            <EditIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
+                                        </IconButton>
+                                </Tooltip>
+                                <Tooltip title="Deletar" placement="bottom">
+                                    <IconButton
+                                        aria-label="delete"
+                                        component={Link}
+                                        onClick={() => callDeleteModal(params.id)}
+                                    >
+                                        <DeleteIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
+                                    </IconButton>
+                                </Tooltip>
+                                </>
+                            ) : (
+                                <>
+                                <Tooltip title="Visualizar" placement="bottom">
+                                    <IconButton
+                                        aria-label="edit"
+                                        component={Link}
+                                        href={`/events/form?id=${params.id}`}
+                                    >
+                                        <VisibilityIcon className="text-accent hover:text-accent-hover transition-all duration-300" />
+                                    </IconButton>
+                                </Tooltip>
+                                </>
+                            )}
                     </div>
                 );
             },
@@ -146,6 +167,8 @@ export default function Dashboard() {
                     name: item.name,
                     startDate: formatStringDateTime(item.startDate),
                     endDate: formatStringDateTime(item.endDate),
+                    isOwner: item.isOwner,
+                    owner: item.owner.name
                 }
             });
             setEvents(data);

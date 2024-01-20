@@ -35,6 +35,7 @@ export default function CreateEvent() {
   const id = searchParams.get('id') ?? '';
   const router = useRouter();
 
+  const [event, setEvent] = useState({});
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState<dayjs.Dayjs>();
@@ -111,6 +112,8 @@ export default function CreateEvent() {
   }, []);
 
   const fillForm = (event) => {
+    setEvent(event);
+
     setName(event.name);
     setDescription(event.description);
     setStartDate(dayjs(event.startDate));
@@ -125,7 +128,7 @@ export default function CreateEvent() {
         <Header/>
 
         <div className="flex flex-col items-center justify-center mt-5 text-black font-bold">
-                <h1 className="text-2xl">Criar Evento</h1>
+                <h1 className="text-2xl">{event?.isOwner != false ? 'Criar' : 'Visualizar'} Evento</h1>
         </div>
 
         <div className="w-fill mt-3">
@@ -146,6 +149,7 @@ export default function CreateEvent() {
                                     helperText={showError && nameValidationMessage.length > 0 ? nameValidationMessage : null}
                                     value={name}
                                     onChange={(e) => setName(e.target.value)}
+                                    disabled={event?.isOwner == false}
                                     />
                             </Grid>
                             <Grid container item xs={12}>
@@ -165,6 +169,7 @@ export default function CreateEvent() {
                                         helperText={showError && descriptionValidationMessage.length > 0 ? descriptionValidationMessage : null}
                                         value={description}
                                         onChange={(e) => setDescription(e.target.value)}
+                                        disabled={event?.isOwner == false}
                                     />
                             </Grid>
                             <Grid container item xs={6}>
@@ -184,6 +189,7 @@ export default function CreateEvent() {
                                             sx={{width: '100%'}}
                                             value={startDate}
                                             onChange={(value) => setStartDate(value)}
+                                            disabled={event?.isOwner == false}
                                         />
                                 </LocalizationProvider>
                             </Grid>
@@ -204,6 +210,7 @@ export default function CreateEvent() {
                                             sx={{width: '100%'}}
                                             value={endDate}
                                             onChange={(value) => setEndDate(value)}
+                                            disabled={event?.isOwner == false}
                                         />
                                 </LocalizationProvider>
                             </Grid>
@@ -219,6 +226,7 @@ export default function CreateEvent() {
                                     helperText={showError && locationValidationMessage.length > 0 ? locationValidationMessage : null}
                                     value={location}
                                     onChange={(e) => setLocation(e.target.value)}
+                                    disabled={event?.isOwner == false}
                                 />
                             </Grid>
                             <Grid container item xs={6}>
@@ -230,6 +238,7 @@ export default function CreateEvent() {
                                     id="googleMapsUrl"
                                     value={googleMapsUrl}
                                     onChange={(e) => setGoogleMapsUrl(e.target.value)}
+                                    disabled={event?.isOwner == false}
                                 />
                             </Grid>
                              <Grid container item xs={12}>
@@ -251,6 +260,7 @@ export default function CreateEvent() {
                                     noOptionsText={users.length === 0 ? 'Nenhum usuário encontrado' : 'Todos usuários foram selecionados'}
                                     value={selectedParticipants}
                                     onChange={(_, value) => setSelectedParticipants(value)}
+                                    disabled={event?.isOwner == false}
                                 />
                             </Grid>
                         </Grid>
@@ -263,16 +273,18 @@ export default function CreateEvent() {
                                 className='bg-gray-300 hover:bg-gray-200'
                                 href='/events'
                             >
-                                Cancelar
+                                {event?.isOwner != false ? 'Cancelar' : 'Voltar'}
                             </Button>
-
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                sx={{ mt: 3, mb: 2, width: '150px' }}
-                            >
-                                Salvar
-                            </Button>
+                            
+                            {event?.isOwner != false &&
+                                <Button
+                                    type="submit"
+                                    variant="contained"
+                                    sx={{ mt: 3, mb: 2, width: '150px' }}
+                                >
+                                    Salvar
+                                </Button>
+                            }
                         </div>
                     </Box>
                 </div>
