@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import { AppRouterCacheProvider } from '@mui/material-nextjs/v14-appRouter';
 import ToastProvider from './Providers/ToastProvider';
+import LoadingContext from "../contexts/LoadingContext";
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -21,7 +22,9 @@ export default function RootLayout({
       <body className={inter.className}>
         <AppRouterCacheProvider>
           <ToastProvider>
-            {children}
+            <LoadingContext>
+              {children}
+            </LoadingContext>
           </ToastProvider>
         </AppRouterCacheProvider>
       </body>

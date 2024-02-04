@@ -11,8 +11,11 @@ import Image from 'next/image';
 import Copyright from './Components/Copyright/Copyright';
 import { api } from '@/services/api';
 import { toast } from 'react-toastify';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
+import {LoadingContext} from "../contexts/LoadingContext";
+import Loading from './Components/Loading/Loading';
 
 type LoginFormType = {
   email: string | null;
@@ -21,6 +24,8 @@ type LoginFormType = {
 
 
 export default function SignIn() {
+
+  const { isLoading, setIsLoading }: any = useContext(LoadingContext);
 
   const [emailValidationMessage, setEmailValidationMessage] = useState("");
   const [passwordValidationMessage, setPasswordValidationMessage] = useState("");
@@ -38,6 +43,9 @@ export default function SignIn() {
   }, []);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+
+    setIsLoading(true);
+
     event.preventDefault();
 
     const data = new FormData(event.currentTarget);
@@ -48,6 +56,7 @@ export default function SignIn() {
 
     let formIsValid = validate(payload);
     if(!formIsValid){
+      setIsLoading(false);
       return;
     }
 
@@ -62,12 +71,14 @@ export default function SignIn() {
 
           api.defaults.headers['Authorization'] = response.data.token;
 
+          setIsLoading(false);
           router.replace('/events');
-      })
-      .catch(e => {
-        let data : any = e?.response?.data;
-        let errorMessage = data[0]?.message ?? 'Erro';
-
+        })
+        .catch(e => {
+          let data : any = e?.response?.data;
+          let errorMessage = data[0]?.message ?? 'Erro';
+          
+        setIsLoading(false);
         toast.error(errorMessage);
       });
   };
@@ -113,6 +124,8 @@ export default function SignIn() {
   }
 
   return (
+    <>
+      {isLoading && <Loading/>}
       <div  className='flex flex-col justify-center items-center h-[100vh] w-[100vw] text-black'>
         <Box className="flex flex-col items-center justify-center m-4 md:w-[500px]">
           <Image src="/logo.svg" alt="Eventy Logo" width={216} height={48} />
@@ -168,5 +181,6 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
       </div>
+      </>
   );
 }

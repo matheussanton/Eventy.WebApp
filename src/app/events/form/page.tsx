@@ -5,7 +5,7 @@ import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import { api } from '@/services/api';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Header } from '@/app/Components/Header/Header';
 import { Autocomplete, Grid } from '@mui/material';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
@@ -18,6 +18,9 @@ import { getFormData } from './hooks/getFormData';
 import {useRouter, useSearchParams} from 'next/navigation';
 import { validate, validateDates } from './hooks/formValidation';
 import { toast } from 'react-toastify';
+import {LoadingContext} from "../../../contexts/LoadingContext";
+import Loading from '../../Components/Loading/Loading';
+
 
 dayjs.extend(utc);
 dayjs.extend(timezone);
@@ -34,6 +37,8 @@ export default function CreateEvent() {
   const searchParams = useSearchParams()
   const id = searchParams.get('id') ?? '';
   const router = useRouter();
+
+  const { isLoading, setIsLoading }: any = useContext(LoadingContext);
 
   const [event, setEvent] = useState({});
   const [name, setName] = useState("");
@@ -55,11 +60,13 @@ export default function CreateEvent() {
   const [showError, setShowError] = useState(false);
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
+    setIsLoading(true);
     event.preventDefault();
 
     let dateValidationMessage = validateDates(event);
     if(dateValidationMessage.length > 0){
       toast.error(dateValidationMessage);
+      setIsLoading(false);
       return;
     }
 
@@ -73,6 +80,7 @@ export default function CreateEvent() {
     });
     
     if(!formIsValid){
+      setIsLoading(false);
       return;
     }
 
@@ -83,11 +91,17 @@ export default function CreateEvent() {
       .catch((e) => {
         console.log(e);
       });
+
+    setIsLoading(false);
+    toast.success("Evento criado com sucesso!");
   };
 
   useEffect(() => {
 
     if(localStorage === undefined) return;
+
+    setIsLoading(true);
+
     var loggedUser = JSON.parse(localStorage.getItem('user') ?? "");
 
     if(id !== '')
@@ -109,6 +123,8 @@ export default function CreateEvent() {
       .catch(() => {
         console.log('Erro');
       });
+
+    setIsLoading(false);
   }, []);
 
   const fillForm = (event) => {
@@ -125,6 +141,8 @@ export default function CreateEvent() {
 
   return (
       <>
+        {isLoading && <Loading/>}
+        
         <Header/>
 
         <div className="flex flex-col items-center justify-center mt-5 text-black font-bold">
