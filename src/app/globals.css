@@ -6,6 +6,10 @@
   --foreground-rgb: 0, 0, 0;
   --background-start-rgb: 214, 219, 220;
   --background-end-rgb: 255, 255, 255;
+  --primary-extra-light-hex: rgb(88, 172, 241);
+  --primary-light-hex: rgb(78, 148, 206);
+  --primary-hex: rgb(25, 103, 167);
+  --primary-mid-hex: rgb(30, 136, 223);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -13,6 +17,10 @@
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
     --background-end-rgb: 0, 0, 0;
+    --primary-extra-light-hex: rgb(88, 172, 241);
+    --primary-light-hex: rgb(78, 148, 206);
+    --primary-hex: rgb(30, 136, 223);
+    --primary-mid-hex: rgb(30, 136, 223);
   }
 }
 
@@ -24,7 +32,7 @@
 }
 
 body {
-  color: rgb(var(--foreground-rgb));
+  /* color: rgb(var(--foreground-rgb)); */
   /* background: linear-gradient(
       to bottom,
       transparent,
@@ -33,4 +41,52 @@ body {
     rgb(var(--background-start-rgb)); */
     min-height: 100vh;
     min-width: 100vw;
+}
+
+.text-gradient {
+  background: radial-gradient(
+    circle at center,
+    var(--primary-hex),
+    var(--primary-light-hex)
+  );
+  background-clip: text; /* Standard property */
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.button-gradient {
+  background: radial-gradient(
+    circle at center,
+    var(--primary-hex),
+    var(--primary-light-hex)
+  );
+  color: white; /* Set the text color to white */
+  padding: 10px 20px; /* Adjust padding as needed */
+  border: none; /* Remove default button border */
+  cursor: pointer;
+}
+
+.button-gradient-reverse {
+  background: radial-gradient(
+    circle at center,
+    var(--primary-light-hex),
+    var(--primary-mid-hex)
+  );
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.button-gradient-reverse:hover {
+  background: radial-gradient(
+    circle at center,
+    var(--primary-extra-light-hex),
+    var(--primary-light-hex)
+  );
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  cursor: pointer;
 }

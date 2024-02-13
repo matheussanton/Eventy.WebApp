@@ -59,10 +59,9 @@ export default function SignIn() {
   return (
       <div  className='flex flex-col justify-center items-center h-[100vh] w-[100vw] text-black'>
         <Box className="flex flex-col items-center justify-center m-4 md:w-[500px]">
-          <Image src="/logo.svg" alt="Eventy Logo" width={216} height={48} />
-          <Typography component="h1" variant="h5">
-            Cadastro
-          </Typography>
+          
+          <h1 className="text-6xl font-extrabold text-gradient mb-8">Eventy</h1>
+
           <Box component="form" onSubmit={async (e) => await handleSubmit(e)} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -112,6 +111,7 @@ export default function SignIn() {
               helperText={showError && passwordConfirmValidationMessage.length > 0 ? passwordConfirmValidationMessage : null}
             />
             <Button
+              className='button-gradient'
               type="submit"
               fullWidth
               variant="contained"

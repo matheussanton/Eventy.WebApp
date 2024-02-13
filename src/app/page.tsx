@@ -1,13 +1,13 @@
 'use client'
 
-import './globals.css'
+import { Inter } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'] })
+
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Image from 'next/image';
 import Copyright from './Components/Copyright/Copyright';
 import { api } from '@/services/api';
 import { toast } from 'react-toastify';
@@ -126,12 +126,11 @@ export default function SignIn() {
   return (
     <>
       {isLoading && <Loading/>}
-      <div  className='flex flex-col justify-center items-center h-[100vh] w-[100vw] text-black'>
+      <div  className={`flex flex-col justify-center items-center h-[100vh] w-[100vw] ${inter.className}`}>
         <Box className="flex flex-col items-center justify-center m-4 md:w-[500px]">
-          <Image src="/logo.svg" alt="Eventy Logo" width={216} height={48} />
-          <Typography component="h1" variant="h5">
-            Entrar
-          </Typography>
+
+          <h1 className="text-6xl font-extrabold text-gradient mb-8">Eventy</h1>
+
           <Box component="form" onSubmit={async (e) => {await  handleSubmit(e)}} noValidate sx={{ mt: 1 }}>
             <TextField
               margin="normal"
@@ -158,6 +157,7 @@ export default function SignIn() {
               helperText={showError && passwordValidationMessage.length > 0 ? passwordValidationMessage : null}
             />
             <Button
+              className='button-gradient'
               type="submit"
               fullWidth
               variant="contained"

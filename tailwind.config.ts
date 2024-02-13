@@ -23,7 +23,7 @@ const config: Config = {
         'light': '#f5f5f5',
         'dark': '#333333',
         'crimson': '#dc143c',
-      },
+      }
     },
   },
   plugins: [],

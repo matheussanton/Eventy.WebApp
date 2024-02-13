@@ -296,6 +296,7 @@ export default function CreateEvent() {
                             
                             {event?.isOwner != false &&
                                 <Button
+                                    className='button-gradient-reverse'
                                     type="submit"
                                     variant="contained"
                                     sx={{ mt: 3, mb: 2, width: '150px' }}

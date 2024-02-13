@@ -30,10 +30,10 @@ export function Header() {
     }
 
     return (
-        <header className="w-full flex flex-row justify-center pt-5 bg-light drop-shadow-xl">
-            <div className="container px-5 h-[5rem] flex flex-row items-center justify-between">
+        <header className="w-full flex flex-row justify-center h-[7rem] bg-slate-50 drop-shadow-lg">
+            <div className="container px-5 flex flex-row items-center justify-between">
                 <Link href="/events">
-                    <img src="/logo.svg" alt="Logo" width={190} height={60} />
+                    <h1 className="text-5xl font-bold cursor-pointer text-gradient">Eventy</h1>
                 </Link>
 
                 <nav className="flex flex-row justify-between items-center gap-6 text-black">
@@ -47,7 +47,7 @@ export function Header() {
                     </Link> */}
                     <Tooltip title="Sair" placement="bottom">
                         <button onClick={handleSignOut}>
-                            <Avatar sx={{backgroundColor: '#1976d2'}} className='m-1 bg-accent hover:bg-accent-hover'>
+                            <Avatar className='m-1 button-gradient hover:bg-accent-hover'>
                                 <ExitToAppIcon />
                             </Avatar>
                         </button>

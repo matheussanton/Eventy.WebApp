@@ -215,11 +215,11 @@ export default function Dashboard() {
 
                         <TabPanel value="1">
                             <div className="flex flex-col items-center justify-center mt-3 text-black">
-                                <h1 className="text-2xl py-5 uppercase font-medium">Meus eventos</h1>
+                                {/* <h1 className="text-2xl py-5 uppercase font-medium">Meus eventos</h1> */}
 
                                 <div className="w-full container">
-                                    <Link href="/events/form" sx={{color: 'white', textDecoration: 'none'}}
-                                    className="bg-accent hover:bg-accent-hover font-bold py-2 px-4 rounded float-right
+                                    <Link href="/events/form" sx={{color: 'white', textDecoration: 'none', fontWeight: 'bold'}}
+                                    className="button-gradient-reverse font-bold py-2 px-4 rounded float-right
                                                 transition-all duration-300">
                                         Criar Evento
                                     </Link>
@@ -267,7 +267,6 @@ export default function Dashboard() {
 
                         <TabPanel value="2">
                             <div className="flex flex-col items-center justify-center mt-3 text-black">
-                                <h1 className="text-2xl py-5 uppercase font-medium">Convites pendentes</h1>
 
                                 <div className="container mt-5">
                                     <div style={{ height: 400, width: '100%' }}>
