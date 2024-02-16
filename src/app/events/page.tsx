@@ -23,7 +23,6 @@ const modalStyle = {
     transform: 'translate(-50%, -50%)',
     width: 400,
     bgcolor: 'background.paper',
-    border: '2px solid #000',
     boxShadow: 24,
     color: 'black',
     border: 'none',
@@ -44,7 +43,7 @@ export default function Dashboard() {
             headerName: 'Ações',
             sortable: false,
             width: 150,
-            disableClickEventBubbling: true,
+            //disableClickEventBubbling: true,
             renderCell: (params: GridCellParams) => {
                 return (
                     <div className="w-full flex flex-row items-center justify-center">
@@ -102,7 +101,7 @@ export default function Dashboard() {
             headerName: 'Ações',
             sortable: false,
             width: 150,
-            disableClickEventBubbling: true,
+            //disableClickEventBubbling: true,
             renderCell: (params: GridCellParams) => {
                 return (
                     <div className="flex flex-row items-center justify-center">

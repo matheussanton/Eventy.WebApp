@@ -4,16 +4,16 @@ import '../globals.css'
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
-import Typography from '@mui/material/Typography';
-import Image from 'next/image';
 import Copyright from '../Components/Copyright/Copyright';
 import FloatingButton from '../Components/FloatingButton/FloatingButton';
 import { api } from '@/services/api';
-import { SignupFormType } from './types/SignupFormType';
 import { useState } from 'react';
 import { getFormData } from './hooks/getFormData';
 import { validate } from './hooks/validation';
 import { toast } from 'react-toastify';
+
+import { Inter } from 'next/font/google'
+const inter = Inter({ subsets: ['latin'] })
 
 export default function SignIn() {
 
@@ -57,7 +57,7 @@ export default function SignIn() {
   };
 
   return (
-      <div  className='flex flex-col justify-center items-center h-[100vh] w-[100vw] text-black'>
+      <div  className={`flex flex-col justify-center items-center h-[100vh] w-[100vw] text-black ${inter.className}`}>
         <Box className="flex flex-col items-center justify-center m-4 md:w-[500px]">
           
           <h1 className="text-6xl font-extrabold text-gradient mb-8">Eventy</h1>
@@ -123,7 +123,7 @@ export default function SignIn() {
         </Box>
         <Copyright sx={{ mt: 8, mb: 4 }} />
 
-        <FloatingButton path='/' text='Voltar ao Login' />
+        <FloatingButton path='/signin' text='Voltar ao Login' />
       </div>
   );
 }

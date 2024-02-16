@@ -1,7 +1,7 @@
 'use client';
 import { useState, createContext } from "react";
 
-export const LoadingContext = createContext();
+export const LoadingContext = createContext<any>({});
 
 function LoadingProvider({ children }: any) {
   const [isLoading, setIsLoading] = useState(false);

@@ -13,7 +13,7 @@ function setupAPIClient(ctx = undefined) {
     }
 
     const api = axios.create({
-        baseURL: 'https://localhost:7213/api/',
+        baseURL: 'http://localhost:5005/api/',
         headers: {
             // Authorization: `Bearer ${cookies['@pizzapp.token']}`
             Authorization: token

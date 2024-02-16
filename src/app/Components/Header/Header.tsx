@@ -7,9 +7,16 @@ import { useContext, useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation';
 import { capitalizeFirstLetter } from '@/utils/stringUtils';
 
+type User = {
+    id?: string;
+    name?: string;
+    email?: string;
+    token?: string;
+}
+
 export function Header() {
 
-    const [user, setUser] = useState(null);
+    const [user, setUser] = useState<User>({});
     const router = useRouter();
 
     useEffect(() => {
@@ -37,7 +44,7 @@ export function Header() {
                 </Link>
 
                 <nav className="flex flex-row justify-between items-center gap-6 text-black">
-                    <h1 className='text-2xl'>Olá, {capitalizeFirstLetter(user?.name)}!</h1>
+                    <h1 className='text-2xl'>Olá, {capitalizeFirstLetter(user.name ?? '')}!</h1>
                     {/* <Link href="/abc">
                         abc
                     </Link>

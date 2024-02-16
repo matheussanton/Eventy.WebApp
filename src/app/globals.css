@@ -12,7 +12,7 @@
   --primary-mid-hex: rgb(30, 136, 223);
 }
 
-@media (prefers-color-scheme: dark) {
+/* @media (prefers-color-scheme: dark) {
   :root {
     --foreground-rgb: 255, 255, 255;
     --background-start-rgb: 0, 0, 0;
@@ -22,7 +22,7 @@
     --primary-hex: rgb(30, 136, 223);
     --primary-mid-hex: rgb(30, 136, 223);
   }
-}
+} */
 
 * {
   margin: 0;
@@ -90,3 +90,18 @@ body {
   border: none;
   cursor: pointer;
 }
+
+
+.root-page {
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  width: 100vw;
+  background-image: url('/blob-bl.svg'), url('/blob-tr.svg');
+  background-position: bottom left, top right;
+  background-size: 60%, 60%;
+  background-repeat: no-repeat;
+}
+
+.slide-top{-webkit-animation:slide-top 4s ease-in-out infinite alternate;animation:slide-top 4s ease-in-out infinite alternate;}
+@-webkit-keyframes slide-top{0%{-webkit-transform:translateY(0);transform:translateY(0)}100%{-webkit-transform:translateY(-100px);transform:translateY(-100px)}}@keyframes slide-top{0%{-webkit-transform:translateY(0);transform:translateY(0)}100%{-webkit-transform:translateY(-100px);transform:translateY(-100px)}}

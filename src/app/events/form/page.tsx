@@ -40,7 +40,7 @@ export default function CreateEvent() {
 
   const { isLoading, setIsLoading }: any = useContext(LoadingContext);
 
-  const [event, setEvent] = useState({});
+  const [event, setEvent] = useState<any>({});
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [startDate, setStartDate] = useState<dayjs.Dayjs>();
@@ -127,7 +127,7 @@ export default function CreateEvent() {
     setIsLoading(false);
   }, []);
 
-  const fillForm = (event) => {
+  const fillForm = (event : any) => {
     setEvent(event);
 
     setName(event.name);
@@ -206,7 +206,7 @@ export default function CreateEvent() {
                                             format="DD/MM/YYYY HH:mm"
                                             sx={{width: '100%'}}
                                             value={startDate}
-                                            onChange={(value) => setStartDate(value)}
+                                            onChange={(value) => setStartDate(value ?? dayjs())}
                                             disabled={event?.isOwner == false}
                                         />
                                 </LocalizationProvider>
@@ -227,7 +227,7 @@ export default function CreateEvent() {
                                             format="DD/MM/YYYY HH:mm"
                                             sx={{width: '100%'}}
                                             value={endDate}
-                                            onChange={(value) => setEndDate(value)}
+                                            onChange={(value) => setEndDate(value ?? dayjs())}
                                             disabled={event?.isOwner == false}
                                         />
                                 </LocalizationProvider>
